@@ -11,18 +11,18 @@ import org.springframework.context.annotation.Configuration;
 public class RazorpayConfig {
 
     @Value("${razorpay.key}")
-    private String key;
+    private String apiKey;
 
     @Value("${razorpay.secret}")
-    private String secret;
+    private String apiSecret;
 
     @PostConstruct
-    public void test() {
-        System.out.println("Razorpay Key Loaded: " + key);
+    void logLoadedKey() {
+        System.out.println("Razorpay Key Loaded: " + apiKey);
     }
 
     @Bean
     public RazorpayClient razorpayClient() throws RazorpayException {
-        return new RazorpayClient(key, secret);
+        return new RazorpayClient(apiKey, apiSecret);
     }
 }
