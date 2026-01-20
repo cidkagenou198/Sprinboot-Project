@@ -11,19 +11,19 @@ import java.util.UUID;
 @Service
 public class PaymentService {
 
-    private final RazorpayClient razorpayClient;
+    private RazorpayClient client;
 
-    public PaymentService(RazorpayClient razorpayClient) {
-        this.razorpayClient = razorpayClient;
+    public PaymentService(RazorpayClient client) {
+        this.client = client;
     }
 
     public Order createRazorpayOrder(double amount) throws RazorpayException {
 
-        JSONObject options = new JSONObject();
-        options.put("amount", amount * 100);
-        options.put("currency", "INR");
-        options.put("receipt", UUID.randomUUID().toString());
+        JSONObject orderRequest = new JSONObject();
+        orderRequest.put("amount", amount * 100);
+        orderRequest.put("currency", "INR");
+        orderRequest.put("receipt", UUID.randomUUID().toString());
 
-        return razorpayClient.orders.create(options);
+        return client.orders.create(orderRequest);
     }
 }
