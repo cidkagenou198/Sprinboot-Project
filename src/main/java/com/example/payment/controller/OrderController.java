@@ -8,19 +8,19 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/orders")
 public class OrderController {
 
-    private final OrderRepository repository;
+    private OrderRepository orderRepository;
 
-    public OrderController(OrderRepository repository) {
-        this.repository = repository;
+    public OrderController(OrderRepository orderRepository) {
+        this.orderRepository = orderRepository;
     }
 
     @PostMapping
-    public Order saveOrder(@RequestBody Order orderRequest) {
-        return repository.save(orderRequest);
+    public Order createOrder(@RequestBody Order order) {
+        return orderRepository.save(order);
     }
 
-    @GetMapping("/{orderId}")
-    public Order fetchOrderById(@PathVariable String orderId) {
-        return repository.findById(orderId).orElse(null);
+    @GetMapping("/{id}")
+    public Order getOrder(@PathVariable String id) {
+        return orderRepository.findById(id).orElse(null);
     }
 }
