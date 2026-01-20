@@ -22,30 +22,30 @@ public class PaymentWebhookController {
     @PostMapping("/razorpay")
     public void handleWebhook(@RequestBody Map<String, Object> payload) {
 
-        Map<String, Object> entity =
+        Map<String, Object> payloadMap =
                 (Map<String, Object>) payload.get("payload");
 
-        Map<String, Object> payment =
-                (Map<String, Object>) entity.get("payment");
+        Map<String, Object> paymentMap =
+                (Map<String, Object>) payloadMap.get("payment");
 
         Map<String, Object> paymentEntity =
-                (Map<String, Object>) payment.get("entity");
+                (Map<String, Object>) paymentMap.get("entity");
 
         String paymentId = (String) paymentEntity.get("id");
         String status = (String) paymentEntity.get("status");
-        String orderId = (String) paymentEntity.get("order_id");
+        String razorpayOrderId = (String) paymentEntity.get("order_id");
 
-        System.out.println("Webhook orderId = " + orderId);
-        System.out.println("Webhook status = " + status);
+        Payment payment =
+                paymentRepository.findByRazorpayOrderId(razorpayOrderId).orElse(null);
 
-        Payment pay = paymentRepository.findByRazorpayOrderId(orderId).orElse(null);
+        if (payment != null && status.equals("captured")) {
 
-        if (pay != null && status.equals("captured")) {
-            pay.setStatus("SUCCESS");
-            pay.setRazorpayPaymentId(paymentId);
-            paymentRepository.save(pay);
+            payment.setStatus("SUCCESS");
+            payment.setRazorpayPaymentId(paymentId);
+            paymentRepository.save(payment);
 
-            Order order = orderRepository.findById(pay.getOrderId()).orElse(null);
+            Order order =
+                    orderRepository.findById(payment.getOrderId()).orElse(null);
 
             if (order != null) {
                 order.setStatus("PAID");
